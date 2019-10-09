@@ -1,0 +1,16 @@
+CC=g++
+
+all: my_prog
+
+my_prog: horizontal.o timer.o
+	$(CC) -o my_prog horizontal.o timer.o
+
+horizontal.o: horizontal.cpp timer.h
+	$(CC) -c horizontal.cpp --std=c++11 -O2
+
+timer.o: timer.cpp timer.h
+	$(CC) -c timer.cpp --std=c++11 -O2
+
+clean:
+	rm -rf *.o my_prog
+
