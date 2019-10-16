@@ -140,11 +140,11 @@ int main(int argc, char** argv) {
         std::cout << result << "\n";
     }
     catch (std::domain_error &er) {
-        std::cout << "error: " << er.what() << "\n";
+        std::cerr << "error: " << er.what() << "\n";
         return 2;
     }
     catch (std::invalid_argument &er) {
-        std::cout << "error: " << er.what() << "\n";
+        std::cerr << "error: " << er.what() << "\n";
         return 3;
     }
     return 0;
