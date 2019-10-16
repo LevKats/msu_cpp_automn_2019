@@ -137,7 +137,7 @@ int main(int argc, char** argv) {
     try {
         auto tokens = parse_tokens(argv[1]);
 	int result = plus_minus_proc(tokens.rbegin(), tokens.rend()); 
-        std::cout << "= " << result << "\n";
+        std::cout << result << "\n";
     }
     catch (std::domain_error &er) {
         std::cout << "error: " << er.what() << "\n";
