@@ -31,7 +31,7 @@ def main():
                 ("1 + 4 / 8 + 2 -+ 8", "", "error: can't parse -+\n"),
                 ("1 + 4 / 8 + 2 -- 8", "11\n", ""),
                 ("-1    + 8", "7\n", ""),
-                ("1000000000000000", "", "error: too long number 1000000000000000\n"),
+                ("1000000000000000", "", "error: maybe too long number 1000000000000000 stoi\n"),
                 ("+8 + 7", "", "error: there must be - or digit on pos 0: str[0]=+\n"),
                 ("-1    + 8 +", "", "error: there can't be operators in the end: +\n"),
                 ("-1    /0", "", "error: zero division\n"),

@@ -54,8 +54,8 @@ std::vector<std::string> parse_tokens(const char *str) {
                 result.push_back(last);
                 last.clear();
             }
-	    if (c == ' ') {}
-	    else if (c == '+' || c == '*' || c == '/')
+        if (c == ' ') {}
+        else if (c == '+' || c == '*' || c == '/')
                 parse_plus_mult_div(result, operators, c);
             else if (c == '-')
                 parse_minus(result, operators, c);
@@ -84,10 +84,26 @@ int const_uminus_proc(iter rbeg, iter rend) {
         try {
             return stoi(*rbeg);
         }
-        catch (std::out_of_range) {
-            std::string mes = "too long number ";
-            throw std::invalid_argument(mes + *rbeg);
+        catch (std::out_of_range &e) {
+            std::string mes = "maybe too long number ";
+            throw std::invalid_argument(mes + *rbeg + " " + e.what());
         }
+        catch (std::invalid_argument &e) {
+        std::string mes = "that can't happen but stoi can't convert";
+            mes += "string of digits with base 10 to int: ";
+        throw std::invalid_argument(mes + e.what());
+        }
+    }
+    if (rend - rbeg <= 1) {
+        throw std::invalid_argument("invalid iterators in const_uminus_proc");
+    }
+    if (rend - rbeg > 2 || *(rend - 1) != "u") {
+        // it can't happen too...        
+        std::string mes_what;
+        std::string mes = "very strange constant ";
+        for (auto it = rbeg; it != rend; ++it)
+            mes_what = *it + mes_what;
+        throw std::invalid_argument(mes + mes_what);
     }
     return -const_uminus_proc(rbeg, rend - 1);
 }
