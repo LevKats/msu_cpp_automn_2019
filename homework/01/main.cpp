@@ -129,15 +129,18 @@ int plus_minus_proc(iter rbeg, iter rend) {
     return mult_div_proc(rbeg, rend);
 }
 
+int calc(char *str) {
+    auto tokens = parse_tokens(str);
+    return plus_minus_proc(tokens.rbegin(), tokens.rend()); 
+}
+
 int main(int argc, char** argv) {
     if (argc <= 1) {
         std::cout << "there must be string in argv\n";
         return 1;
     }
-    try {
-        auto tokens = parse_tokens(argv[1]);
-	int result = plus_minus_proc(tokens.rbegin(), tokens.rend()); 
-        std::cout << result << "\n";
+    try { 
+        std::cout << calc(argv[1]) << "\n";
     }
     catch (std::domain_error &er) {
         std::cerr << "error: " << er.what() << "\n";
