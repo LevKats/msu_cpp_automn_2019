@@ -1,6 +1,4 @@
 #include "linear_allocator.h"
-#include <new>
-#include <iostream>
 
 LinearAllocator::LinearAllocator(std::size_t size) : size(size)
 { 
