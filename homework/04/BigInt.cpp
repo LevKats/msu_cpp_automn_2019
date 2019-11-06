@@ -48,7 +48,7 @@ BigInt::BigInt(BigInt&& moved)
     moved.mem = nullptr;
 }
     
-const BigInt& BigInt::operator=(const BigInt& other) {
+BigInt& BigInt::operator=(const BigInt& other) {
     if (this == &other)
         return *this;
     sign = other.sign;
@@ -59,12 +59,12 @@ const BigInt& BigInt::operator=(const BigInt& other) {
     return *this;
 }
 
-const BigInt& BigInt::operator=(int i) {
+BigInt& BigInt::operator=(int i) {
     *this = BigInt(i);
     return *this;
 }
 
-const BigInt& BigInt::operator=(BigInt&& moved) {
+BigInt& BigInt::operator=(BigInt&& moved) {
     if (this == &moved)
         return *this;
     sign = moved.sign;
@@ -97,40 +97,40 @@ BigInt operator-(BigInt&& rvalue) {
     return rvalue;
 }
 
-BigInt natural_plus(const BigInt& left, const BigInt& right) {
-    if (left.is_nan()) {
+BigInt BigInt::natural_plus(const BigInt& right) const {
+    if (this->is_nan()) {
         throw std::domain_error("left object is nan");
     }
     if (right.is_nan()) {
         throw std::domain_error("right object is nan");
     }
     
-    if (left.length >= right.length) {
+    if (length >= right.length) {
         BigInt result;
         char add = 0;
-        for (int i = 0; i < left.length; ++i) {
+        for (int i = 0; i < length; ++i) {
             int r = i < right.length ? right.mem[i] : 0;
-            add = (left.mem[i] + r + add) > 9;
+            add = (mem[i] + r + add) > 9;
         }
-        result.length = left.length + add;
+        result.length = length + add;
         result.sign = true;
         result.mem = new char[result.length];
         add = 0;
         for (int i = 0; i < result.length; ++i) {
             int r = i < right.length ? right.mem[i] : 0;
-            int l = i < left.length? left.mem[i] : 0;
+            int l = i < length ? mem[i] : 0;
             result.mem[i] = (l + r + add) % 10;
             add = (l + r + add) > 9;
         }
         return result;
     }
     else {
-        return natural_plus(right, left);
+        return right.natural_plus(*this);
     }
 }
 
-BigInt natural_minus(const BigInt& left, const BigInt& right) {
-    if (left.is_nan()) {
+BigInt BigInt::natural_minus(const BigInt& right) const {
+    if (this->is_nan()) {
         throw std::domain_error("left object is nan");
     }
     if (right.is_nan()) {
@@ -141,9 +141,9 @@ BigInt natural_minus(const BigInt& left, const BigInt& right) {
     result.length = 0;
     result.sign = true;
     char add = false;
-    for (int i = 0; i < left.length; ++i) {
-        int r = i < right.length ? right.mem[i] : 0;
-        int digit = left.mem[i] - add - r; 
+    for (int i = 0; i < length; ++i) {
+        int r = i < length ? right.mem[i] : 0;
+        int digit = mem[i] - add - r; 
         add = (digit) < 0;
         if (digit != 0)
             result.length = i + 1; 
@@ -154,7 +154,7 @@ BigInt natural_minus(const BigInt& left, const BigInt& right) {
     add = false;
     for (int i = 0; i < result.length; ++i) {
         int r = i < right.length ? right.mem[i] : 0;
-        int digit = left.mem[i] - add - r;
+        int digit = mem[i] - add - r;
         add = digit < 0;
         result.mem[i] = add ? 10 + digit : digit; 
     }
@@ -170,16 +170,16 @@ BigInt operator+(const BigInt& left, const BigInt& right) {
     }
     
     if (left.sign == right.sign) {
-        return left.sign ? natural_plus(left, right) :
-            -natural_plus(left, right);
+        return left.sign ? left.natural_plus(right) :
+            -left.natural_plus(right);
     }
     else {
         if (left.sign)
-            return !abs_less(left, right) ? natural_minus(left, right) :
-                -natural_minus(right, left);
+            return !left.abs_less(right) ? left.natural_minus(right) :
+                -right.natural_minus(left);
         else
-            return !abs_less(left, right) ? -natural_minus(left, right) :
-                natural_minus(right, left);
+            return !left.abs_less(right) ? -left.natural_minus(right) :
+                right.natural_minus(left);
     }
 }
 
@@ -194,23 +194,23 @@ BigInt operator-(const BigInt& left, const BigInt& right) {
     return left + (-right);
 }
 
-bool abs_less(const BigInt& left, const BigInt& right) {
-    if (left.is_nan()) {
+bool BigInt::abs_less(const BigInt& right) const {
+    if (this->is_nan()) {
         throw std::domain_error("left object is nan");
     }
     if (right.is_nan()) {
         throw std::domain_error("right object is nan");
     }
     
-    if (left.length < right.length)
+    if (length < right.length)
         return true;
-    else if (left.length > right.length)
+    else if (length > right.length)
         return false;
     else {
-        for (int i = left.length - 1; i >= 0; --i) {
-            if (left.mem[i] < right.mem[i])
+        for (int i = length - 1; i >= 0; --i) {
+            if (mem[i] < right.mem[i])
                 return true;
-            else if (left.mem[i] > right.mem[i])
+            else if (mem[i] > right.mem[i])
                 return false;
         }
         return false;
@@ -231,10 +231,10 @@ bool operator<(const BigInt& left, const BigInt& right) {
         return false;
     }
     if (left.sign) {
-        return abs_less(left, right);
+        return left.abs_less(right);
     }
     else {
-        return !abs_less(left, right);
+        return !left.abs_less(right);
     }
 }
 

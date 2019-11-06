@@ -9,18 +9,15 @@ public:
     BigInt(int);
     BigInt(BigInt&&);
     
-    const BigInt& operator=(const BigInt&);
-    const BigInt& operator=(int);
-    const BigInt& operator=(BigInt&&);
+    BigInt& operator=(const BigInt&);
+    BigInt& operator=(int);
+    BigInt& operator=(BigInt&&);
     
     BigInt operator-() const;
     friend BigInt operator-(BigInt&&);
     
     friend BigInt operator+(const BigInt&, const BigInt&);
     friend BigInt operator-(const BigInt&, const BigInt&);
-    friend BigInt natural_plus(const BigInt&, const BigInt&);
-    friend BigInt natural_minus(const BigInt&, const BigInt&);
-    friend bool abs_less(const BigInt&, const BigInt&);
     friend bool operator<(const BigInt&, const BigInt&);
     friend bool operator>(const BigInt&, const BigInt&);
     friend bool operator==(const BigInt&, const BigInt&);
@@ -52,6 +49,11 @@ public:
     
     ~BigInt();
 private:
+    BigInt natural_plus(const BigInt&) const;
+    BigInt natural_minus(const BigInt&) const;
+    bool abs_less(const BigInt&) const;
+
+
     bool sign;
     char* mem;
     size_t length;
