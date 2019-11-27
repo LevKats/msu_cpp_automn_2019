@@ -3,35 +3,28 @@
 #include <vector>
 #include <sstream>
 
-std::vector<std::string> args_strings() {
-    return std::vector<std::string>();
-}
-
 template <class T>
-std::vector<std::string> args_strings(T&& val) {
+void args_strings(std::vector<std::string>& res, T&& val) {
     std::stringstream stream;
     stream << val;
-    return {stream.str()};
+    res.push_back(stream.str());
 }
 
 template <class T, class... Args>
-std::vector<std::string> args_strings(T&& val, Args&&... args) {
+void args_strings(std::vector<std::string>&res, T&& val, Args&&... args) {
     std::stringstream stream;
-    try {
-        stream << val;
-    }
-    catch (const std::exception &e) {
-        throw std::runtime_error(e.what());
-    }
-    catch (...) {
-        throw std::runtime_error("strange error while <<");
-    }
-    std::vector<std::string> result;
-    result.push_back(stream.str());
-    std::vector<std::string> temp(args_strings(std::forward<Args>(args)...));
-    for (auto &st : temp)
-        result.push_back(st);
-    return result;
+    stream << val;
+    res.push_back(stream.str());
+    args_strings(res, std::forward<Args>(args)...);
+}
+
+std::string format(const char *st) {
+    if (st == nullptr)
+        throw std::runtime_error("no format string");
+    for (int i = 0; st[i] != '\0'; ++i)
+        if (st[i] == '{' || st[i] == '}')
+            throw std::runtime_error("{} with empty args");
+    return std::string(st);
 }
 
 template <class... Args>
@@ -40,8 +33,8 @@ std::string format(const char* st, Args&&... args)
     if (st == nullptr)
         throw std::runtime_error("no format string"); 
             
-    std::vector<std::string> strings(
-    args_strings(std::forward<Args>(args)...));
+    std::vector<std::string> strings;
+    args_strings(strings, std::forward<Args>(args)...);
     std::string tmp;
     std::stringstream stream;
     bool add = false;
@@ -49,7 +42,7 @@ std::string format(const char* st, Args&&... args)
         if (st[i] == '{')
             add = true;
         else if (add && st[i] == '}') {
-            int ind;
+            size_t ind;
             try {
                 ind = std::stoi(tmp);
             }
@@ -60,7 +53,7 @@ std::string format(const char* st, Args&&... args)
                 throw std::runtime_error("too big index");
             }
             tmp.clear();
-            if (ind >= 0 && ind < static_cast<int>(strings.size()))
+            if (ind >= 0 && ind < strings.size())
                 stream << strings[ind];
             else
                 throw std::runtime_error("no such index");
