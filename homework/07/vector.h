@@ -262,7 +262,7 @@ public:
     void push_back(T&& element) {
         if (size_ == allocated_size)
             reserve(size_ == 0 ? 1: 2 * size_);
-        alloc_.construct(memory + (size_++), std::forward<T>(element));
+        alloc_.construct(memory + (size_++), std::move(element));
     }
     
     void push_back(const reference element) {
