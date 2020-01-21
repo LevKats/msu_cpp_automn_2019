@@ -1,6 +1,6 @@
 #include "file_sort.h"
 
-std::vector<std::string> make_chunks(std::string filename) {
+std::vector<std::string> make_chunks(const std::string &filename) {
     std::ifstream is (filename, std::ifstream::binary);
     std::vector<std::string> res;
     if (is) {
@@ -39,7 +39,7 @@ std::vector<std::string> make_chunks(std::string filename) {
     }
 }
 
-void merge(std::pair<std::string, std::string> p, std::string name) {
+void merge(const std::pair<std::string, std::string> &p, const std::string &name) {
     std::ifstream is1 (p.first, std::ifstream::binary);
     std::ifstream is2 (p.second, std::ifstream::binary);
     std::ofstream os(name, std::ios::binary);
@@ -87,7 +87,7 @@ void merge(std::pair<std::string, std::string> p, std::string name) {
     os.close();
 }
 
-void sort_file(std::string name, std::string new_name) {
+void sort_file(const std::string &name, const std::string &new_name) {
     std::ifstream is (name, std::ifstream::binary);
     std::ofstream os(new_name, std::ios::binary);
     if (!(is && os)) {
@@ -107,7 +107,7 @@ void sort_file(std::string name, std::string new_name) {
     os.close();
 }
 
-void sort(std::string filename, std::string to) {
+void sort(const std::string &filename, const std::string &to) {
     auto chunks = make_chunks(filename);
     std::vector<std::string> chunks1(chunks.size() / 2),
     chunks2(chunks.size() - chunks.size() / 2);
@@ -130,7 +130,7 @@ void sort(std::string filename, std::string to) {
     std::remove(file2.data());
 }
 
-Sorter_One_Thread::Sorter_One_Thread(std::vector<std::string> chunks, int counter):
+Sorter_One_Thread::Sorter_One_Thread(const std::vector<std::string> &chunks, int counter):
 chunks(chunks), counter(counter) {}
     
 std::string Sorter_One_Thread::sort() {

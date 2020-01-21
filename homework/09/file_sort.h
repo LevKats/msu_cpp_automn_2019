@@ -13,7 +13,7 @@ const int chunk_size = 10 * 1000;
 
 class Sorter_One_Thread {
 public:
-    Sorter_One_Thread(std::vector<std::string> chunks, int counter);
+    Sorter_One_Thread(const std::vector<std::string> &chunks, int counter);
     std::string sort();
     ~Sorter_One_Thread();
 private:
@@ -22,11 +22,11 @@ private:
     int counter;
 };
 
-std::vector<std::string> make_chunks(std::string filename);
+std::vector<std::string> make_chunks(const std::string &filename);
 
-void merge(std::pair<std::string, std::string> p, std::string name);
+void merge(const std::pair<std::string, std::string> &p, const std::string &name);
 
-void sort_file(std::string name, std::string new_name);
+void sort_file(const std::string &name, const std::string &new_name);
 
-void sort(std::string filename, std::string to);
+void sort(const std::string &filename, const std::string &to);
 
